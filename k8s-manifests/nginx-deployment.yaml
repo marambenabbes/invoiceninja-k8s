@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: invoiceninja-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: invoiceninja-nginx
+  template:
+    metadata:
+      labels:
+        app: invoiceninja-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+          - containerPort: 80
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: invoiceninja-nginx-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: invoiceninja-nginx
+spec:
+  selector:
+    app: invoiceninja-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort

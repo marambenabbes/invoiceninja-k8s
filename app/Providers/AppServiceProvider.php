@@ -31,6 +31,7 @@ use App\Helpers\Mail\Office365MailTransport;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Symfony\Component\Mailer\Bridge\Brevo\Transport\BrevoTransportFactory;
 use Symfony\Component\Mailer\Transport\Dsn;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -73,6 +74,9 @@ class AppServiceProvider extends ServiceProvider
             Livewire::addPersistentMiddleware([
                 SetDomainNameDb::class,
             ]);
+        }
+        if (config('app.env') === 'production' || env('REQUIRE_HTTPS', false)) {
+        URL::forceScheme('https');
         }
 
         Livewire::setUpdateRoute(function ($handle) {

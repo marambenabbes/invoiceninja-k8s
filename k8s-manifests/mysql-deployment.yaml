@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: invoiceninja-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: invoiceninja-mysql
+  template:
+    metadata:
+      labels:
+        app: invoiceninja-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "your_root_password"
+          - name: MYSQL_DATABASE
+            value: "ninja"
+          - name: MYSQL_USER
+            value: "ninja"
+          - name: MYSQL_PASSWORD
+            value: "ninja_password"
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - name: mysql-persistent-storage
+            mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: invoiceninja-mysql
+spec:
+  selector:
+    app: invoiceninja-mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306

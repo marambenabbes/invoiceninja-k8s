@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: invoiceninja-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/ingress.class: "nginx"  # or use ingressClassName below
+spec:
+  ingressClassName: nginx   # add this if your k8s supports it
+  tls:
+  - hosts:
+    - localhost
+    secretName: invoiceninja-tls
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: invoiceninja-nginx
+            port:
+              number: 80

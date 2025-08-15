@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: invoiceninja-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: invoiceninja-app
+  template:
+    metadata:
+      labels:
+        app: invoiceninja-app
+    spec:
+      containers:
+      - name: invoiceninja-app
+        image: marambenabbes12/invoiceninja-app:latest
+        env:
+          - name: DB_HOST
+            value: invoiceninja-mysql
+          - name: DB_DATABASE
+            value: ninja
+          - name: DB_USERNAME
+            value: ninja
+          - name: DB_PASSWORD
+            value: ninja_password
+        ports:
+          - containerPort: 9000
