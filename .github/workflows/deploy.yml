@@ -17,9 +17,28 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
+          extensions: mbstring, bcmath, intl, curl, mysql, xml, gd
+          ini-values: post_max_size=256M, upload_max_filesize=256M, memory_limit=2G
 
       - name: Install dependencies
         run: composer install --no-dev --optimize-autoloader
+
+      - name: Prepare Laravel directories
+        run: |
+          mkdir -p bootstrap/cache
+          mkdir -p storage/framework/{cache,sessions,views}
+          mkdir -p storage/logs
+          chmod -R 775 bootstrap/cache storage
+
+      - name: Discover Laravel packages
+        run: php artisan package:discover --ansi
+
+      - name: Clear Laravel caches
+        run: |
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
+          php artisan view:clear
 
       - name: Build front-end
         run: npm install && npm run build
@@ -42,3 +61,6 @@ jobs:
           manifests: |
             k8s-manifests/app-deployment.yaml
             k8s-manifests/app-service.yaml
+            k8s-manifests/mysql-deployment.yaml
+            k8s-manifests/nginx-deployment.yaml
+            k8s-manifests/nginx-configmap.yaml
